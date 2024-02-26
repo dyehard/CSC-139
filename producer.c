@@ -101,12 +101,15 @@ void InitShm(int bufSize, int itemCnt)
      // Use the above name.
      // **Extremely Important: map the shared memory block for both reading and writing 
      // Use PROT_READ | PROT_WRITE
-	
+
+    //gShmPtr = mmap();
+
     // Write code here to set the values of the four integers in the header
     // Just call the functions provided below, like this
-    SetBufSize(bufSize); 	
-       
-	   
+    SetBufSize(bufSize); 
+    SetItemCnt(itemCnt);
+    SetIn(in);
+    SetOut(out);	   
 }
 
 void Producer(int bufSize, int itemCnt, int randSeed)

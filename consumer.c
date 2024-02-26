@@ -55,6 +55,9 @@ int main()
      // These are: bufSize, itemCnt, in, out
      // Just call the functions provided below like this:
      bufSize = GetBufSize();
+     itemCnt = GetItemCnt();
+     in = GetIn();
+     out = GetOut();
 	
      // Write code here to check that the consumer has read the right values: 
      printf("Consumer reading: bufSize = %d\n",bufSize);
