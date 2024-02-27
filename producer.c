@@ -2,9 +2,9 @@
 CSC139 
 Spring 2024
 First Assignment
-Last Name, First Name
-Section #
-OSs Tested on: such as Linux, Mac, etc.
+Marchitiello, Paul
+Section #01
+OSs Tested on: Windows
 */
 
 #include <stdio.h>
@@ -60,6 +60,16 @@ int main(int argc, char* argv[])
 	randSeed = atoi(argv[3]);
 	
 	// Write code to check the validity of the command-line arguments
+        if(bufSize < 2 || bufSize > 480)
+        {
+                printf("Invalid buffer size!")
+                exit(1);
+        }
+        else if(item <= 0)
+        {
+              printf("Invalid item count!")
+                exit(1);  
+        }
 
         // Function that creates a shared memory segment and initializes its header
         InitShm(bufSize, itemCnt);        
@@ -102,7 +112,9 @@ void InitShm(int bufSize, int itemCnt)
      // **Extremely Important: map the shared memory block for both reading and writing 
      // Use PROT_READ | PROT_WRITE
 
-    //gShmPtr = mmap();
+    int shm_fd = shm_open(name, O_CREAT | O_RDWR, 0666);
+    truncate(shm_fd, 4096);
+    gShmPtr = mmap(0,SHM_SIZE, PROT_WRITE, M_SHARED, shm_fd, 0);
 
     // Write code here to set the values of the four integers in the header
     // Just call the functions provided below, like this
@@ -128,9 +140,10 @@ void Producer(int bufSize, int itemCnt, int randSeed)
     // printf("Producing Item %d with value %d at Index %d\n", i, val, in);
     // where i is the item number, val is the item value, in is its index in the bounded buffer
     	
-	
-	
-	
+    for(int i = 0; i < itemCnt; i++)
+    {
+        printf("Producing Item %d with value %d at Index %d\n", i, val, in);
+    }
     
      printf("Producer Completed\n");
 }

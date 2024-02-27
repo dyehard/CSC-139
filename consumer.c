@@ -2,9 +2,9 @@
 CSC139 
 Spring 2024
 First Assignment
-Last Name, First Name
-Section #
-OSs Tested on: such as Linux, Mac, etc.
+Marchitiello, Paul
+Section #01
+OSs Tested on: Windows
 */
 
 #include <stdio.h>
