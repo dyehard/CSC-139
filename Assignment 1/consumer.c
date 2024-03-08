@@ -38,7 +38,7 @@ int ReadAtBufIndex(int);
 
 int main()
 {
-    const char *name = "OS_HW1_Paul_Marchitiello"; // Name of shared memory block to be passed to shm_open
+    const char *name = "OS_HW1_PaulMarchitiello"; // Name of shared memory block to be passed to shm_open
     int bufSize; // Bounded buffer size
     int itemCnt; // Number of items to be consumed
     int in; // Index of next item to produce
@@ -49,7 +49,8 @@ int main()
      // **Extremely Important: map the shared memory block for both reading and writing 
      // Use PROT_READ | PROT_WRITE
 
-
+     int shm_fd = shm_open(name, O_RDWR, 0666);
+     gShmPtr = mmap(0,SHM_SIZE, PROT_WRITE | PROT_READ, MAP_SHARED, shm_fd, 0);
 
      // Write code here to read the four integers from the header of the shared memory block 
      // These are: bufSize, itemCnt, in, out
