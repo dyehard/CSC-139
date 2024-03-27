@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
                 printf("Invalid buffer size!")
                 exit(1);
         }
-        else if(item <= 0)
+        else if(itemCnt <= 0)
         {
               printf("Invalid item count!")
                 exit(1);  
@@ -114,7 +114,7 @@ void InitShm(int bufSize, int itemCnt)
 
     int shm_fd = shm_open(name, O_CREAT | O_RDWR, 0666);
     truncate(shm_fd, 4096);
-    gShmPtr = mmap(0,SHM_SIZE, PROT_WRITE, M_SHARED, shm_fd, 0);
+    gShmPtr = mmap(0,SHM_SIZE, PROT_READ | PROT_WRITE, M_SHARED, shm_fd, 0);
 
     // Write code here to set the values of the four integers in the header
     // Just call the functions provided below, like this
@@ -139,9 +139,13 @@ void Producer(int bufSize, int itemCnt, int randSeed)
     // Use the following print statement to report the production of an item:
     // printf("Producing Item %d with value %d at Index %d\n", i, val, in);
     // where i is the item number, val is the item value, in is its index in the bounded buffer
-    	
-    for(int i = 0; i < itemCnt; i++)
-    {
+
+    for(int i = 0; i < itemCnt; i++){
+        while (((in + 1) % BUFFER_SIZE) == out); /* do nothing */
+        in = GetIn();
+        int val = GetRand(4, 2200);
+        WriteAtBufIndex(in, val);
+        SetIn(in);
         printf("Producing Item %d with value %d at Index %d\n", i, val, in);
     }
     
@@ -185,7 +189,8 @@ int GetHeaderVal(int i)
 void SetHeaderVal(int i, int val)
 {
        // Write the implementation
-
+        void* ptr = gShmPtr + i*sizeof(int);
+        memcpy(ptr, &val, sizeof(int));
 }
 
 // Get the value of shared variable "bufSize"
@@ -225,7 +230,10 @@ void WriteAtBufIndex(int indx, int val)
 int ReadAtBufIndex(int indx)
 {
         // Write the implementation
- 
+        int val;
+
+        void* ptr = gShmPtr + 4*sizeof(int) + indx*sizeof(int);
+        return val;
 }
 
 // Get a random number in the range [x, y]

@@ -49,7 +49,9 @@ int main()
      // **Extremely Important: map the shared memory block for both reading and writing 
      // Use PROT_READ | PROT_WRITE
 
-
+     int shm_fd = shm_open(name, O_CREAT | O_RDWR, 0666);
+     truncate(shm_fd, 4096);
+     gShmPtr = mmap(0,SHM_SIZE, PROT_READ | PROT_WRITE, M_SHARED, shm_fd, 0);
 
      // Write code here to read the four integers from the header of the shared memory block 
      // These are: bufSize, itemCnt, in, out
@@ -69,7 +71,24 @@ int main()
      // Use the following print statement to report the consumption of an item:
      // printf("Consuming Item %d with value %d at Index %d\n", i, val, out);
      // where i is the item number, val is the item value, out is its index in the bounded buffer
-                
+
+    for(int i = 0; i < itemCnt; i++){
+        while (in == out); /* do nothing */
+        int val = ReadAtBufIndex(i);
+        WriteAtBufIndex(i,0);
+        SetOut(GetIn());
+        printf("Consuming Item %d with value %d at Index %d\n", i, val, out);
+    }
+
+    item next_consumed;
+    while (true) 
+    {
+        while (in == out); /* do nothing */
+        next_consumed = buffer[out];
+        out = (out + 1) % BUFFER_SIZE;
+        /* consume the item in next consumed */
+        printf("Consuming Item %d with value %d at Index %d\n", i, val, out);
+    }    
           
      // remove the shared memory segment 
      if (shm_unlink(name) == -1) {
@@ -106,7 +125,8 @@ int GetHeaderVal(int i)
 void SetHeaderVal(int i, int val)
 {
         // Write the implementation
-
+        void* ptr = gShmPtr + i*sizeof(int);
+        memcpy(ptr, &val, sizeof(int));
 }
 
 // Get the value of shared variable "bufSize"
@@ -138,13 +158,16 @@ int GetOut()
 void WriteAtBufIndex(int indx, int val)
 {
         // Write the implementation
-
+        void* ptr = gShmPtr + 4*sizeof(int) + indx*sizeof(int);
+	memcpy(ptr, &val, sizeof(int));
 }
 
 // Read the val at the given index in the bounded buffer
 int ReadAtBufIndex(int indx)
 {
         // Write the implementation
- 
-}
+        int val;
 
+        void* ptr = gShmPtr + 4*sizeof(int) + indx*sizeof(int);
+        return val;
+}
