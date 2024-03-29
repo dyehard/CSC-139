@@ -102,7 +102,22 @@ int main(int argc, char *argv[]){
 	// Don't forget to properly initialize shared variables
 	for (int i = 0; i < gThreadCount; i++){
 		pthread_attr_init(attr[i]);
-		pthread_create(tid[i], attr[i], ThFindProd, argv[1]);
+		pthread_create(tid[i], attr[i], ThFindProd, indices[i][]);
+	}
+
+	bool allChildrenDone = false;
+	while (allChildrenDone == false)
+	{
+		allChildrenDone = true;
+
+		for(int i = 0; i < gThreadCount; i++){
+			if (gThreadDone[i] == false)
+				allChildrenDone = false;
+		}
+	}
+
+	for (int i = 0; i < gThreadCount; i++){
+		pthread_cancel(tid[i]);
 	}
 
     prod = ComputeTotalProduct();
@@ -125,9 +140,13 @@ int main(int argc, char *argv[]){
 	for (int i = 0; i < gThreadCount; i++){
 		pthread_attr_init(attr[i]);
 		pthread_create(tid[i], attr[i], ThFindProdWithSemaphore, indices[i][]);
-		pthread_join(tid[i], NULL);
 	}
 
+	sem_wait(completed);
+	
+	for (int i = 0; i < gThreadCount; i++){
+		pthread_cancel(tid[i]);
+	}
 
     prod = ComputeTotalProduct();
 	printf("Threaded multiplication with parent waiting on a semaphore completed in %ld ms. Prod = %d\n", GetTime(), prod);
@@ -186,6 +205,11 @@ void* ThFindProdWithSemaphore(void *param) {
 	for (int i = startIndex; i < endIndex; i++){
 		if(gData[i] == 0){
 			gThreadProd[threadNum] = productResult;
+
+			sem_wait(mutex);
+			gDoneThreadCount++;
+			sem_post(mutex);
+
 			sem_post(completed);
 		}	
 
@@ -195,7 +219,7 @@ void* ThFindProdWithSemaphore(void *param) {
 
 	gThreadProd[threadNum] = productResult;
 	sem_wait(mutex);
-	gThreadDone[threadNum] = true;
+	gDoneThreadCount++;
 	sem_post(mutex);
 
 	if(threadNum == gThreadCount + 1)
