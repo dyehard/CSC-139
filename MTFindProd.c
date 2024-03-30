@@ -1,3 +1,115 @@
+/*
+Name: Paul Marchitiello
+Section Number: 01
+System Specs:
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 58
+model name      : Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz
+stepping        : 0
+microcode       : 0x5003604
+cpu MHz         : 3092.734
+cache size      : 25344 KB
+physical id     : 0
+siblings        : 2
+core id         : 0
+cpu cores       : 2
+apicid          : 0
+initial apicid  : 0
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon nopl xtopology tsc_reliable nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm pti ssbd ibrs ibpb stibp fsgsbase tsc_adjust smep arat md_clear flush_l1d arch_capabilities
+bugs            : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit srbds mmio_unknown
+bogomips        : 6185.46
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 43 bits physical, 48 bits virtual
+power management:
+
+processor       : 1
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 58
+model name      : Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz
+stepping        : 0
+microcode       : 0x5003604
+cpu MHz         : 3092.734
+cache size      : 25344 KB
+physical id     : 0
+siblings        : 2
+core id         : 1
+cpu cores       : 2
+apicid          : 1
+initial apicid  : 1
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon nopl xtopology tsc_reliable nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm pti ssbd ibrs ibpb stibp fsgsbase tsc_adjust smep arat md_clear flush_l1d arch_capabilities
+bugs            : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit srbds mmio_unknown
+bogomips        : 6185.46
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 43 bits physical, 48 bits virtual
+power management:
+
+processor       : 2
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 58
+model name      : Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz
+stepping        : 0
+microcode       : 0x5003604
+cpu MHz         : 3092.734
+cache size      : 25344 KB
+physical id     : 1
+siblings        : 2
+core id         : 0
+cpu cores       : 2
+apicid          : 2
+initial apicid  : 2
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon nopl xtopology tsc_reliable nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm pti ssbd ibrs ibpb stibp fsgsbase tsc_adjust smep arat md_clear flush_l1d arch_capabilities
+bugs            : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit srbds mmio_unknown
+bogomips        : 6185.46
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 43 bits physical, 48 bits virtual
+power management:
+
+processor       : 3
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 58
+model name      : Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz
+stepping        : 0
+microcode       : 0x5003604
+cpu MHz         : 3092.734
+cache size      : 25344 KB
+physical id     : 1
+siblings        : 2
+core id         : 1
+cpu cores       : 2
+apicid          : 3
+initial apicid  : 3
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon nopl xtopology tsc_reliable nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm pti ssbd ibrs ibpb stibp fsgsbase tsc_adjust smep arat md_clear flush_l1d arch_capabilities
+bugs            : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit srbds mmio_unknown
+bogomips        : 6185.46
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 43 bits physical, 48 bits virtual
+power management:*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -73,7 +185,7 @@ int main(int argc, char *argv[]){
 	SetTime();
 	prod = SqFindProd(arraySize);
 	printf("Sequential multiplication completed in %ld ms. Product = %d\n", GetTime(), prod);
-
+/*
 	// Threaded with parent waiting for all child threads
 	InitSharedVars();
 	SetTime();
@@ -83,14 +195,17 @@ int main(int argc, char *argv[]){
 	// The thread start function is ThFindProd
 	// Don't forget to properly initialize shared variables
 	for (int i = 0; i < gThreadCount; i++){
-		pthread_attr_init(attr[i]);
-		pthread_create(tid[i], attr[i], ThFindProd, indices[i][]);
+		pthread_attr_init(&attr[i]);
+		pthread_create(&tid[i], &attr[i], ThFindProd, indices[i]);
+	}
+
+	for(int i = 0; i < gThreadCount; i++){
 		pthread_join(tid[i], NULL);
 	}
 
     prod = ComputeTotalProduct();
 	printf("Threaded multiplication with parent waiting for all children completed in %ld ms. Product = %d\n", GetTime(), prod);
-
+*/
 	// Multi-threaded with busy waiting (parent continually checking on child threads without using semaphores)
 	InitSharedVars();
 	SetTime();
@@ -101,25 +216,26 @@ int main(int argc, char *argv[]){
 	// The thread start function is ThFindProd
 	// Don't forget to properly initialize shared variables
 	for (int i = 0; i < gThreadCount; i++){
-		pthread_attr_init(attr[i]);
-		pthread_create(tid[i], attr[i], ThFindProd, indices[i][]);
+		pthread_attr_init(&attr[i]);
+		pthread_create(&tid[i], &attr[i], ThFindProd, indices[i]);
 	}
 
+/*
 	bool allChildrenDone = false;
 	while (allChildrenDone == false)
 	{
 		allChildrenDone = true;
-
 		for(int i = 0; i < gThreadCount; i++){
-			if (gThreadDone[i] == false)
+			if (gThreadDone[i] == false){
 				allChildrenDone = false;
+			}	
 		}
 	}
 
 	for (int i = 0; i < gThreadCount; i++){
 		pthread_cancel(tid[i]);
 	}
-
+*/
     prod = ComputeTotalProduct();
 	printf("Threaded multiplication with parent continually checking on children completed in %ld ms. Product = %d\n", GetTime(), prod);
 
@@ -128,8 +244,7 @@ int main(int argc, char *argv[]){
 
 	InitSharedVars();
     // Initialize your semaphores here
-	sem_init(completed,0,1);
-	sem_init(mutex,0,1);
+	sem_init(&mutex,0,1);
 
 	SetTime();
 
@@ -138,11 +253,11 @@ int main(int argc, char *argv[]){
 	// The thread start function is ThFindProdWithSemaphore
 	// Don't forget to properly initialize shared variables and semaphores using sem_init
 	for (int i = 0; i < gThreadCount; i++){
-		pthread_attr_init(attr[i]);
-		pthread_create(tid[i], attr[i], ThFindProdWithSemaphore, indices[i][]);
+		pthread_attr_init(&attr[i]);
+		pthread_create(&tid[i], &attr[i], ThFindProdWithSemaphore, indices[i]);
 	}
 
-	sem_wait(completed);
+	sem_wait(&completed);
 	
 	for (int i = 0; i < gThreadCount; i++){
 		pthread_cancel(tid[i]);
@@ -150,17 +265,18 @@ int main(int argc, char *argv[]){
 
     prod = ComputeTotalProduct();
 	printf("Threaded multiplication with parent waiting on a semaphore completed in %ld ms. Prod = %d\n", GetTime(), prod);
+	
 }
 
 // Write a regular sequential function to multiply all the elements in gData mod NUM_LIMIT
 // REMEMBER TO MOD BY NUM_LIMIT AFTER EACH MULTIPLICATION TO PREVENT YOUR PRODUCT VARIABLE FROM OVERFLOWING
 int SqFindProd(int size) {
 	int productResult = gData[0];
-	for (int i = 0; i < size - 1; i++){
+	for (int i = 1; i < size; i++){
 		if(gData[i] == 0)
-			return productResult;
+			break;
 
-		productResult *= gData[i+1];
+		productResult *= gData[i];
 		productResult %= NUM_LIMIT;
 	}
 	return productResult;
@@ -171,22 +287,24 @@ int SqFindProd(int size) {
 // When it is done, this function should store the product in gThreadProd[threadNum] and set gThreadDone[threadNum] to true
 void* ThFindProd(void *param) {
 	int threadNum = ((int*)param)[0];
+	int startIndex = ((int*)param)[1];
+	int endIndex = ((int*)param)[2];
 
-	int productResult = gData[param[1]];
-	int startIndex = param[1];
-	int endIndex = param[2];
 	for (int i = startIndex; i < endIndex; i++){
+		pthread_testcancel();
 		if(gData[i] == 0){
-			gThreadProd[threadNum] = productResult;
 			gThreadDone[threadNum] = true;
+			break;
 		}	
-
-		productResult *= gData[i+1];
-		productResult %= NUM_LIMIT;
+		else{
+			gThreadProd[threadNum] *= gData[i];
+			gThreadProd[threadNum] %= NUM_LIMIT;
+			printf("%d: %d \n", i, gThreadProd[threadNum]);
+		}
 	}
 
-	gThreadProd[threadNum] = productResult;
 	gThreadDone[threadNum] = true;
+	pthread_exit(0);
 }
 
 // Write a thread function that computes the product of all the elements in one division of the array mod NUM_LIMIT
@@ -198,32 +316,25 @@ void* ThFindProd(void *param) {
 // Don't forget to protect access to gDoneThreadCount with the "mutex" semaphore
 void* ThFindProdWithSemaphore(void *param) {
 	int threadNum = ((int*)param)[0];
+	int startIndex = ((int*)param)[1];
+	int endIndex = ((int*)param)[2];
 
-	int productResult = gData[param[1]];
-	int startIndex = param[1];
-	int endIndex = param[2];
 	for (int i = startIndex; i < endIndex; i++){
+		pthread_testcancel();
 		if(gData[i] == 0){
-			gThreadProd[threadNum] = productResult;
-
-			sem_wait(mutex);
-			gDoneThreadCount++;
-			sem_post(mutex);
-
-			sem_post(completed);
+			sem_post(&completed);
 		}	
 
-		productResult *= gData[i+1];
-		productResult %= NUM_LIMIT;
+		gThreadProd[threadNum] *= gData[i];
+		gThreadProd[threadNum] %= NUM_LIMIT;
 	}
 
-	gThreadProd[threadNum] = productResult;
-	sem_wait(mutex);
+	sem_wait(&mutex);
 	gDoneThreadCount++;
-	sem_post(mutex);
-
-	if(threadNum == gThreadCount + 1)
-		sem_post(completed);
+	if(gDoneThreadCount == gThreadCount)
+		sem_post(&completed);
+	sem_post(&mutex);
+	pthread_exit(0);
 }
 
 int ComputeTotalProduct() {
@@ -264,13 +375,13 @@ void GenerateInput(int size, int indexForZero) {
 // For each division i, indices[i][0] should be set to the division number i,
 // indices[i][1] should be set to the start index, and indices[i][2] should be set to the end index
 void CalculateIndices(int arraySize, int thrdCnt, int indices[MAX_THREADS][3]) {
-	int section = (arraySize / thrdCnt) - 1;
+	int section = (arraySize / thrdCnt);
 	
 	for (int i = 0; i < thrdCnt; i++)
 	{
 		indices[i][0] = i;
-		indices[i][1] = 0 + (section * i);
-		indices[i][2] = section + (section * i);
+		indices[i][1] = section * i;
+		indices[i][2] = (section * (i + 1) ) - 1;
 	}
 }
 
