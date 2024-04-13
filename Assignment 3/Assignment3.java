@@ -1,5 +1,3 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 
 import java.io.File;
@@ -11,9 +9,8 @@ import java.io.FileWriter;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Stack;
+import java.util.PriorityQueue;
 
 public class Assignment3{
 
@@ -40,15 +37,10 @@ class SchedulerSimulation{
     private int[][] processInfo;
 
     //output variables
-    private Queue<Integer> processQueue = new LinkedList<Integer>();
+    private Queue<Integer> queue = new LinkedList<Integer>();
     private ArrayList<Integer> CPUSchedule = new ArrayList<Integer>();
     private ArrayList<Integer> processSchedule = new ArrayList<Integer>();
-    private ArrayList<Integer> waittimes = new ArrayList<Integer>();
-
-    //RR variables
-    //Stack<Integer> processStack = new Stack<Integer>();
-    private int lowestProcess;
-    private ArrayList<Integer> alreadyQueued = new ArrayList<Integer>();
+    private int[][] waitTimes;
 
     public static void main(String[] args){
         
@@ -68,12 +60,13 @@ class SchedulerSimulation{
 
             selectedAlgorithmName = fistLineStrings[0];
 
-            if (fistLineStrings[1] != null)
+            if (fistLineStrings.length > 1)
                 timeQuantum = Integer.parseInt(fistLineStrings[1]);
 
             numberOfProcesses = Integer.parseInt(myReader.nextLine());
 
             processInfo = new int[numberOfProcesses][4]; //[i][0] = ProcessNumber, [i][1] = Arrivaltime, [i][2] = CPUBursttime, [i][3] = Priority
+            waitTimes = new int[numberOfProcesses][2]; //i = processID, [i][0] = CPUBurstMAX, [i][1] = waitTime
 
             for(int i = 0; i < numberOfProcesses; i++){
                 String[] processStrings = myReader.nextLine().split(" ");
@@ -81,11 +74,14 @@ class SchedulerSimulation{
                 processInfo[i][1] = Integer.parseInt(processStrings[1]);
                 processInfo[i][2] = Integer.parseInt(processStrings[2]);
                 processInfo[i][3] = Integer.parseInt(processStrings[3]);
+
+                waitTimes[i][0] = Integer.parseInt(processStrings[2]);
+                waitTimes[i][1] = 0;
             }
 
             myReader.close();
         }catch (FileNotFoundException e){
-            System.out.println("File not found. Did you update the rootFilePath variable?");
+            System.out.println("File not found. Did you update the rootFilePath variable on line 27?");
             e.printStackTrace();
         }
 
@@ -113,90 +109,118 @@ class SchedulerSimulation{
 
 
             for(int i = 0; i < CPUSchedule.size(); i++){
-
-                outputFile.write(CPUSchedule.get(i) + " ");
-                outputFile.write(processSchedule.get(i));
+                outputFile.write(CPUSchedule.get(i) + "    " + processSchedule.get(i));
                 outputFile.newLine();
             }
 
-            outputFile.write(String.valueOf(GetAverageWaittime()));
+            outputFile.write("AVG Waiting Time: " + String.valueOf(GetAverageWaittime()));
 
             outputFile.close();
         }catch (IOException e ){
-            System.out.println("File not found. Did you update the rootFilePath variable?");
+            System.out.println("File not found. Did you update the rootFilePath variable on line 27?");
             e.printStackTrace();
         }
     }
-    /*
-    public void BuildArrivalQueue(){
-        
-        while (processStack.size() < numberOfProcesses){
-            for(int i = 0; i < numberOfProcesses; i++){
-                if (alreadyQueued.contains(lowestProcess)){
-                    if ((lowestProcess + 1) >= numberOfProcesses)
-                        lowestProcess = 0;
-                    else
-                        lowestProcess++;
-                }
-
-                if (alreadyQueued.contains(i))
-                    continue;
-                else if( processInfo[lowestProcess][1] < processInfo[i][1]){
-                    lowestProcess = i;
-                }
-                else if( processInfo[lowestProcess][1] == processInfo[i][1]
-                &&  processInfo[lowestProcess][0] < processInfo[i][0]){
-                    lowestProcess = i;
-                }
-            }
-
-            alreadyQueued.add(lowestProcess);
-            processStack.push(lowestProcess);
-        }
-    }*/
 
     public void RR(){
-        /*
-        lowestProcess = 0;
-        BuildArrivalQueue();
-        
-        while (!processStack.empty()) {
-            processQueue.add(processStack.pop());
-        }*/
 
         int processDoneCount = 0;
         int time = 0;
         int currentTimeQuantum = 0;
         int processUsingCPU = -1;
 
+        CheckForArrivalsRR(time);
+        if(!queue.isEmpty()){
+            processUsingCPU = queue.poll();
+            UpdateOutputData(time, processUsingCPU);
+        }
+        
         while (processDoneCount < numberOfProcesses) {
-
-            if(currentTimeQuantum >= timeQuantum 
-            || processInfo[processUsingCPU][2] <= 0){
-                currentTimeQuantum = 0;
-
-                if(processInfo[processUsingCPU][2] > 0){
-                    processQueue.add(processInfo[processUsingCPU][0]);
-                    processDoneCount++;
-                }
-                    
-                    for (int i = 0; i < numberOfProcesses; i++){
-                        if(processInfo[processQueue.peek()][1] <= time)
-                            processUsingCPU = processQueue.poll();
-                    }
-            }
-
-            if (processUsingCPU > 0)
-                processInfo[processUsingCPU][2]--;
             
+            if(processUsingCPU >= 0){
+                System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
+                if(currentTimeQuantum >= timeQuantum){
+                    currentTimeQuantum = 0;
+    
+                    if(processInfo[processUsingCPU][2] > 0){
+                        queue.offer(processUsingCPU); 
+                    }
+                    else{
+                        processDoneCount++;
+                        LogWaitTime(time, processUsingCPU);
+                    }
+
+                    if(!queue.isEmpty()){  
+                        processUsingCPU = queue.poll();
+                        UpdateOutputData(time, processUsingCPU);                       
+                    }
+                }
+                
+                if (processInfo[processUsingCPU][2] <= 0){
+                    
+                    processDoneCount++;
+                    LogWaitTime(time, processUsingCPU);
+                    
+                    if(!queue.isEmpty()){                        
+                        processUsingCPU = queue.poll();
+                        currentTimeQuantum = 0;
+                        UpdateOutputData(time, processUsingCPU);
+                    }
+                }
+                processInfo[processUsingCPU][2]--;
+                System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
+            }  
             time++;
             currentTimeQuantum++;
+            CheckForArrivalsRR(time);                                                  
         }
         
         WriteOutputFile();
     }
 
     public void SJF(){
+        
+        int processDoneCount = 0;
+        int time = 0;
+        int processUsingCPU = -1;
+
+        ArrayList<Integer> arrivalList = new ArrayList<Integer>();
+        PriorityQueue<Integer> burstQueue = new PriorityQueue<Integer>();
+        //populate burstQueue
+        for (int i = 0; i < numberOfProcesses; i++){
+            burstQueue.offer(processInfo[i][2]);
+        }
+
+        Queue<Integer> queueSJF = new LinkedList<Integer>();
+        UpdateQueueSJF(time, queueSJF, arrivalList, burstQueue);
+        UpdateOutputData(time, processUsingCPU);
+        
+        while (processDoneCount < numberOfProcesses) {
+
+            if(processUsingCPU < 0 && !queueSJF.isEmpty()){
+                System.out.println(queueSJF.peek());
+                processUsingCPU = queueSJF.poll();
+                UpdateOutputData(time, processUsingCPU);
+            }
+            if(processUsingCPU >= 0){
+                System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
+                
+                if (processInfo[processUsingCPU][2] <= 0){
+                    
+                    processDoneCount++;
+                    LogWaitTime(time, processUsingCPU);
+                    
+                    if(!queueSJF.isEmpty()){                        
+                        processUsingCPU = queueSJF.poll();
+                        UpdateOutputData(time, processUsingCPU);
+                    }
+                }
+                processInfo[processUsingCPU][2]--;
+                System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
+            }  
+            time++;   
+            UpdateQueueSJF(time, queueSJF, arrivalList, burstQueue);                                               
+        }
         
         WriteOutputFile();
     }
@@ -211,15 +235,54 @@ class SchedulerSimulation{
         WriteOutputFile();
     }
 
+    //Helper methods
     public float GetAverageWaittime(){
 
         float average = 0;
 
-        for (int i = 0; i < waittimes.size(); i++){
-            average += waittimes.get(i);
+        for (int i = 0; i < waitTimes.length; i++){
+            average += waitTimes[i][1];
         }
 
-        average /= waittimes.size();
+        average /= waitTimes.length;
         return average;
+    }
+
+    public void LogWaitTime(int finishTime, int processID){
+        waitTimes[processID][1] = finishTime - processInfo[processID][1] - waitTimes[processID][0];
+    }
+
+    public void UpdateOutputData(int time, int processUsingCPU){
+        CPUSchedule.add(time);
+        processSchedule.add(processInfo[processUsingCPU][0]);
+    }
+
+    public void CheckForArrivalsRR(int time){
+        
+        for (int i = 0; i < numberOfProcesses; i++){
+
+            if(processInfo[i][1] == time && !queue.contains(i)){
+                queue.offer(i);
+            }
+        }
+    }
+
+    public void UpdateQueueSJF(int time, Queue<Integer> queueSJF, ArrayList<Integer> arrivalList, PriorityQueue<Integer> burstQueue){
+        
+        for (int i = 0; i < numberOfProcesses; i++){
+            if(processInfo[i][1] == time && !arrivalList.contains(i)){
+                arrivalList.add(i);
+                System.out.println(arrivalList.get(i));
+            }
+        }
+
+        for ( int i = 0; i < arrivalList.size(); i++){
+            if(processInfo[i][2] == burstQueue.peek()){
+                queueSJF.offer(i);
+                arrivalList.remove(i);
+                burstQueue.poll();
+                System.out.println(queueSJF.peek());
+            }
+        }
     }
 }

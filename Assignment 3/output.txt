@@ -1,2 +1,5 @@
-RR 3
-NaN
+SJF
+6    4
+9    1
+13    2
+AVG Waiting Time: 5.25
