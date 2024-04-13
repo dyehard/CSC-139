@@ -81,7 +81,7 @@ class SchedulerSimulation{
 
             myReader.close();
         }catch (FileNotFoundException e){
-            System.out.println("File not found. Did you update the rootFilePath variable on line 27?");
+            System.out.println("File not found. Did you update the rootFilePath variable on line 24?");
             e.printStackTrace();
         }
 
@@ -117,7 +117,7 @@ class SchedulerSimulation{
 
             outputFile.close();
         }catch (IOException e ){
-            System.out.println("File not found. Did you update the rootFilePath variable on line 27?");
+            System.out.println("File not found. Did you update the rootFilePath variable on line 24?");
             e.printStackTrace();
         }
     }
