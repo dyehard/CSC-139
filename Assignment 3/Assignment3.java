@@ -183,6 +183,7 @@ class SchedulerSimulation{
         int processDoneCount = 0;
         int time = 0;
         int processUsingCPU = -1;
+        ArrayList<Integer> processDoneList = new ArrayList<Integer>();
 
         ArrayList<Integer> arrivalList = new ArrayList<Integer>();
         PriorityQueue<Integer> burstQueue = new PriorityQueue<Integer>();
@@ -192,34 +193,34 @@ class SchedulerSimulation{
         }
 
         Queue<Integer> queueSJF = new LinkedList<Integer>();
-        UpdateQueueSJF(time, queueSJF, arrivalList, burstQueue);
-        UpdateOutputData(time, processUsingCPU);
+        UpdateQueueSJF(time, queueSJF, arrivalList, burstQueue, processDoneList);
         
         while (processDoneCount < numberOfProcesses) {
 
             if(processUsingCPU < 0 && !queueSJF.isEmpty()){
-                System.out.println(queueSJF.peek());
                 processUsingCPU = queueSJF.poll();
                 UpdateOutputData(time, processUsingCPU);
             }
             if(processUsingCPU >= 0){
-                System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
                 
                 if (processInfo[processUsingCPU][2] <= 0){
                     
                     processDoneCount++;
+                    processDoneList.add(processUsingCPU);
                     LogWaitTime(time, processUsingCPU);
-                    
-                    if(!queueSJF.isEmpty()){                        
+                    processUsingCPU = -1;
+
+                    if(!queueSJF.isEmpty()){   
+                                            
                         processUsingCPU = queueSJF.poll();
                         UpdateOutputData(time, processUsingCPU);
                     }
                 }
                 processInfo[processUsingCPU][2]--;
                 System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
-            }  
+            } 
             time++;   
-            UpdateQueueSJF(time, queueSJF, arrivalList, burstQueue);                                               
+            UpdateQueueSJF(time, queueSJF, arrivalList, burstQueue, processDoneList);                                               
         }
         
         WriteOutputFile();
@@ -267,22 +268,28 @@ class SchedulerSimulation{
         }
     }
 
-    public void UpdateQueueSJF(int time, Queue<Integer> queueSJF, ArrayList<Integer> arrivalList, PriorityQueue<Integer> burstQueue){
-        
+    public void UpdateQueueSJF(int time, Queue<Integer> queueSJF, ArrayList<Integer> arrivalList, PriorityQueue<Integer> burstQueue, ArrayList<Integer> processDoneList){
+        queueSJF.clear();
+        burstQueue.clear();
+
         for (int i = 0; i < numberOfProcesses; i++){
-            if(processInfo[i][1] == time && !arrivalList.contains(i)){
-                arrivalList.add(i);
-                System.out.println(arrivalList.get(i));
+            if(processInfo[i][1] <= time && !processDoneList.contains(i)){
+                if(!arrivalList.contains(i))
+                    arrivalList.add(i);
+                burstQueue.offer(processInfo[i][2]);
             }
         }
 
         for ( int i = 0; i < arrivalList.size(); i++){
-            if(processInfo[i][2] == burstQueue.peek()){
+            if(burstQueue.isEmpty() || burstQueue.peek() == null){
+                break;
+            } 
+            if(processInfo[arrivalList.get(i)][2] == burstQueue.peek()){
                 queueSJF.offer(i);
                 arrivalList.remove(i);
                 burstQueue.poll();
-                System.out.println(queueSJF.peek());
             }
         }
+        
     }
 }

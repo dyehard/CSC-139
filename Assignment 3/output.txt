@@ -1,5 +1,7 @@
 SJF
-6    4
-9    1
-13    2
-AVG Waiting Time: 5.25
+0    1
+4    3
+9    3
+10    2
+15    2
+AVG Waiting Time: 2.5
