@@ -138,7 +138,7 @@ class SchedulerSimulation{
         while (processDoneCount < numberOfProcesses) {
             
             if(processUsingCPU >= 0){
-                System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
+                //System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
                 if(currentTimeQuantum >= timeQuantum){
                     currentTimeQuantum = 0;
     
@@ -168,7 +168,7 @@ class SchedulerSimulation{
                     }
                 }
                 processInfo[processUsingCPU][2]--;
-                System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
+                //System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
             }  
             time++;
             currentTimeQuantum++;
@@ -199,6 +199,7 @@ class SchedulerSimulation{
 
             if(processUsingCPU < 0 && !queueSJF.isEmpty()){
                 processUsingCPU = queueSJF.poll();
+                processDoneList.add(processUsingCPU);
                 UpdateOutputData(time, processUsingCPU);
             }
             if(processUsingCPU >= 0){
@@ -206,18 +207,21 @@ class SchedulerSimulation{
                 if (processInfo[processUsingCPU][2] <= 0){
                     
                     processDoneCount++;
-                    processDoneList.add(processUsingCPU);
+                    
                     LogWaitTime(time, processUsingCPU);
                     processUsingCPU = -1;
 
                     if(!queueSJF.isEmpty()){   
                                             
                         processUsingCPU = queueSJF.poll();
+                        processDoneList.add(processUsingCPU);
                         UpdateOutputData(time, processUsingCPU);
                     }
                 }
-                processInfo[processUsingCPU][2]--;
-                System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
+                if (processUsingCPU >= 0){
+                    processInfo[processUsingCPU][2]--;
+                    //System.out.println("time: " + time + ", process: " + processUsingCPU + ", time remaining: " + processInfo[processUsingCPU][2]);
+                }    
             } 
             time++;   
             UpdateQueueSJF(time, queueSJF, arrivalList, burstQueue, processDoneList);                                               
@@ -281,12 +285,13 @@ class SchedulerSimulation{
         }
 
         for ( int i = 0; i < arrivalList.size(); i++){
+            
             if(burstQueue.isEmpty() || burstQueue.peek() == null){
                 break;
             } 
             if(processInfo[arrivalList.get(i)][2] == burstQueue.peek()){
+                //System.out.println("arrival: " + arrivalList.get(i) + ", burst: " + burstQueue.peek());
                 queueSJF.offer(i);
-                arrivalList.remove(i);
                 burstQueue.poll();
             }
         }
