@@ -31,8 +31,8 @@ class VirtualMemorySimulation{
 
     //Test variables
     private int testNumber = 1;//update for test case
-    private String testInputFilePath = rootFilePath + "\\test" + testNumber + ".txt";
-    private String testOutputFilePath = rootFilePath + "\\test" + testNumber + "o.txt";
+    private String testInputFilePath;
+    private String testOutputFilePath;
 
     private int pageCount = 0;
     private int[] requests;
@@ -54,6 +54,8 @@ class VirtualMemorySimulation{
 
         for (int i = 1; i <= 5; i++){
             testNumber = i;
+            testInputFilePath = rootFilePath + "\\test" + testNumber + ".txt";
+            testOutputFilePath = rootFilePath + "\\test" + testNumber + "o.txt";
             ReadInputFile();
         }
     }
@@ -97,6 +99,7 @@ class VirtualMemorySimulation{
             for(int i = 0; i < log.size(); i++){
                 outputFile.write(log.get(i));
                 outputFile.newLine();
+                //System.out.println(log.get(i));
             }
 
             outputFile.close();
@@ -151,14 +154,14 @@ class VirtualMemorySimulation{
         for (int i = 0; i < requests.length; i++)
         { 
             if (!CheckIfPageLoaded(requests[i]) && !CheckIfFrameIsEmpty(requests[i])){
-                
+
                 log.add("Page " + frames[fifoIndex] + " unloaded from Frame " + fifoIndex 
                 + ", Page " + requests[i] + " loaded into Frame " + fifoIndex);
                 frames[fifoIndex] = requests[i];
                 
-                if (fifoIndex > frames.length)
-                    fifoIndex = 0;
                 fifoIndex++;
+                if (fifoIndex >= frames.length)
+                    fifoIndex = 0;
             }
         }
 
@@ -186,13 +189,16 @@ class VirtualMemorySimulation{
             e.printStackTrace();
         }
 
+        System.out.println("Test" + testNumber );
+
         for ( int i = 0; i < log.size(); i++ ){
             if( !log.get(i).toLowerCase().equals(correctOutput.get(i).toLowerCase())){
-                System.out.println("Test" + testNumber + " ERROR:");
+                System.out.print("ERROR: ");
+            }
+            else{
                 System.out.println("MyOutput: " + log.get(i));
-                System.out.println("CorrectOutput: " + correctOutput.get(i));
+                System.out.println("Expected: " + correctOutput.get(i));
             }
         }
-        System.out.println("Test" + testNumber + ": Passed");
     }
 } 
