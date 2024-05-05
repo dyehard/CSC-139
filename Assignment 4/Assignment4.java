@@ -107,7 +107,7 @@ class VirtualMemorySimulation{
             
         }
         catch (FileNotFoundException e){
-            System.out.println("File not found. Did you update the rootFilePath variable on line 24?");
+            System.out.println("File not found. Did you update the rootFilePath variable on line 23?");
             e.printStackTrace();
         }
     }
