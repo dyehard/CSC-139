@@ -6,17 +6,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import javax.swing.text.Style;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.PriorityQueue;
 
 public class Assignment4{
 
@@ -32,9 +25,15 @@ class VirtualMemorySimulation{
     private String outputFilePath = rootFilePath + "\\output.txt";
     private File inputFile;
 
-    //Test variables
-    private boolean enableAutomatedTesting = true; //Set to true to enable automated testing
-    private int testCount = 5;
+    //Automated Testing: To use automated testing your test input/output files must be in the format 'testN.txt' and 'testNo.txt' respectively. Where 'N' is the test number.
+    //Step 1: Set the enableAutomatedTesting boolean to true.
+    //Step 2: Set the testCount int to the number of test input files you would like to run.
+    //Step 3: Run the program
+    //Done: You can review the test results in the console. Results show output vs expected preceeded by an ERROR if they don't match. The total errors for all tests displays last. 
+    private boolean enableAutomatedTesting = false; //Set to true to enable automated testing 
+    private int testCount = 5; // Set this value equal to the number of test files
+    
+    private int testNumber = 1;
     private String testInputFilePath;
     private String testOutputFilePath;
     private int errorCount = 0;
@@ -59,13 +58,14 @@ class VirtualMemorySimulation{
         if(enableAutomatedTesting){
             
             for (int i = 1; i <= testCount; i++){
-                
+                testNumber = i;
                 testInputFilePath = rootFilePath + "\\test" + i + ".txt";
                 testOutputFilePath = rootFilePath + "\\test" + i + "o.txt";
+                ReadInputFile();
             }
         }
-
-        ReadInputFile();
+        else
+            ReadInputFile();
     }
 
     public void ReadInputFile(){ 
