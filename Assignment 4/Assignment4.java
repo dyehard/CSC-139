@@ -12,7 +12,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.PriorityQueue;
 
@@ -25,19 +27,22 @@ public class Assignment4{
 
 class VirtualMemorySimulation{
     //Text file paths
-    private String rootFilePath = "C:\\Users\\dyeha\\Documents\\GitHub\\CSC-139\\Assignment 4"; //Update to the root file path for your input and output files
+    private String rootFilePath = "G:\\Repos_New\\CSC-139\\Assignment 4"; //Update to the root file path for your input and output files
     private String inputFilePath = rootFilePath + "\\input.txt";
     private String outputFilePath = rootFilePath + "\\output.txt";
+    private File inputFile;
 
     //Test variables
-    private int testNumber = 1;//update for test case
+    private boolean enableAutomatedTesting = true; //Set to true to enable automated testing
+    private int testCount = 5;
     private String testInputFilePath;
     private String testOutputFilePath;
+    private int errorCount = 0;
+    private int errorTotal = 0;
 
-    private int pageCount = 0;
     private int[] requests;
 
-    private int[] frames;
+    private int[][] frames;
 
     private int pageFaultCount = 0;
 
@@ -50,26 +55,34 @@ class VirtualMemorySimulation{
     }
 
     public VirtualMemorySimulation(){
-        //ReadInputFile();
 
-        for (int i = 1; i <= 5; i++){
-            testNumber = i;
-            testInputFilePath = rootFilePath + "\\test" + testNumber + ".txt";
-            testOutputFilePath = rootFilePath + "\\test" + testNumber + "o.txt";
-            ReadInputFile();
+        if(enableAutomatedTesting){
+            
+            for (int i = 1; i <= testCount; i++){
+                
+                testInputFilePath = rootFilePath + "\\test" + i + ".txt";
+                testOutputFilePath = rootFilePath + "\\test" + i + "o.txt";
+            }
         }
+
+        ReadInputFile();
     }
 
     public void ReadInputFile(){ 
 
         try{
-            File inputFile = new File(testInputFilePath/*inputFilePath*/);
+            
+            if(enableAutomatedTesting){
+                inputFile = new File(testInputFilePath);
+            }
+            else
+                inputFile = new File(inputFilePath);
+            
             Scanner myReader = new Scanner(inputFile);
             
             String[] fistLineStrings = myReader.nextLine().split("\\s+");
             
-            pageCount = Integer.parseInt(fistLineStrings[0]);
-            frames = new int[Integer.parseInt(fistLineStrings[1])];
+            frames = new int[Integer.parseInt(fistLineStrings[1])][2];
             requests = new int[Integer.parseInt(fistLineStrings[2])];
 
             ResetVariables();
@@ -82,8 +95,16 @@ class VirtualMemorySimulation{
             myReader.close();
         
             FIFO();
+            Optimal();
+            LRU();
 
-            TestCode();
+            if(enableAutomatedTesting){
+                
+                TestCode();
+                System.out.println("Total Errors: " + errorTotal);
+                log = new ArrayList<String>();
+            }
+            
         }
         catch (FileNotFoundException e){
             System.out.println("File not found. Did you update the rootFilePath variable on line 24?");
@@ -99,7 +120,6 @@ class VirtualMemorySimulation{
             for(int i = 0; i < log.size(); i++){
                 outputFile.write(log.get(i));
                 outputFile.newLine();
-                //System.out.println(log.get(i));
             }
 
             outputFile.close();
@@ -108,22 +128,25 @@ class VirtualMemorySimulation{
             System.out.println("File not found. Did you update the rootFilePath variable on line 24?");
             e.printStackTrace();
         }
+
+        errorTotal += errorCount;
     }
 
     public void ResetVariables(){
         for(int i = 0; i < frames.length; i++){
-            frames[i] = -1;
+            frames[i][0] = -1;
         }
 
         pageFaultCount = 0;
-        log = new ArrayList<String>();
+        errorCount = 0;
     }
 
-    public boolean CheckIfPageLoaded(int page ){
+    public boolean CheckIfPageLoaded(int page, int currentTime ){
         for (int i = 0; i < frames.length; i++)
         {
-            if(frames[i] == page){
+            if(frames[i][0] == page){
                 log.add("Page " + page + " already in Frame " + i);
+                frames[i][1] = currentTime;
                 return true;
             }
         }
@@ -131,43 +154,19 @@ class VirtualMemorySimulation{
         return false;
     }
 
-    public boolean CheckIfFrameIsEmpty(int page){
+    public boolean CheckIfFrameIsEmpty(int page, int currentTime){
 
         for (int i = 0; i < frames.length; i++)
         {
-            if(frames[i] == -1 ){
-                frames[i] = page;
+            if(frames[i][0] == -1 ){
+                frames[i][0] = page;
+                frames[i][1] = currentTime;
                 log.add("Page " + page + " loaded into Frame " + i);
                 return true;
             }
         }
 
         return false;
-    }
-
-    public void FIFO(){
-
-        ResetVariables();
-        fifoIndex = 0;
-        log.add("FIFO");
-
-        for (int i = 0; i < requests.length; i++)
-        { 
-            if (!CheckIfPageLoaded(requests[i]) && !CheckIfFrameIsEmpty(requests[i])){
-
-                log.add("Page " + frames[fifoIndex] + " unloaded from Frame " + fifoIndex 
-                + ", Page " + requests[i] + " loaded into Frame " + fifoIndex);
-                frames[fifoIndex] = requests[i];
-                
-                fifoIndex++;
-                if (fifoIndex >= frames.length)
-                    fifoIndex = 0;
-            }
-        }
-
-        log.add(pageFaultCount + " page faults");
-        
-        WriteOutputFile();
     }
 
     public void TestCode(){
@@ -192,13 +191,118 @@ class VirtualMemorySimulation{
         System.out.println("Test" + testNumber );
 
         for ( int i = 0; i < log.size(); i++ ){
-            if( !log.get(i).toLowerCase().equals(correctOutput.get(i).toLowerCase())){
-                System.out.print("ERROR: ");
+            if( !log.get(i).equalsIgnoreCase(correctOutput.get(i))){
+                System.out.println("ERROR!!!!!!");
+                errorCount++;
             }
-            else{
-                System.out.println("MyOutput: " + log.get(i));
-                System.out.println("Expected: " + correctOutput.get(i));
+            System.out.println("MyOutput: " + log.get(i));
+            System.out.println("Expected: " + correctOutput.get(i));
+        }
+        System.out.println("ERRORS: " + errorCount );
+    }
+
+    public void FIFO(){
+
+        ResetVariables();
+        fifoIndex = 0;
+        log.add("FIFO");
+
+        for (int i = 0; i < requests.length; i++)
+        { 
+            if (!CheckIfPageLoaded(requests[i], i) && !CheckIfFrameIsEmpty(requests[i], i)){
+
+                log.add("Page " + frames[fifoIndex][0] + " unloaded from Frame " + fifoIndex 
+                + ", Page " + requests[i] + " loaded into Frame " + fifoIndex);
+                frames[fifoIndex][0] = requests[i];
+                
+                fifoIndex++;
+                if (fifoIndex >= frames.length)
+                    fifoIndex = 0;
             }
         }
+
+        log.add(pageFaultCount + " page faults");
+        WriteOutputFile();
+    }
+
+    public void Optimal(){
+
+        ResetVariables();
+
+        log.add("");
+        log.add("Optimal");
+
+        for (int i = 0; i < requests.length; i++)
+        { 
+            if (!CheckIfPageLoaded(requests[i], i) && !CheckIfFrameIsEmpty(requests[i], i)){
+
+
+                ArrayList<Integer> tempFrames = new ArrayList<Integer>();
+                //Copy frames into tempFrames
+                for(int j = 0; j < frames.length; j++)
+                    tempFrames.add(frames[j][0]);
+
+                //Look into the future
+                for (int p = i + 1; p < requests.length; p++){
+                     
+                    if(tempFrames.size() == 1)
+                    {
+                        break;
+                    }
+
+                    int target = tempFrames.indexOf(requests[p]);
+                    if(target != -1)
+                        tempFrames.remove(target);
+                }
+
+                //Get the index of the frame to unload and handle unload
+                for (int k = 0; k < frames.length; k++){
+
+                    if (frames[k][0] == tempFrames.get(0)){
+                        
+                        log.add("Page " + frames[k][0] + " unloaded from Frame " + k 
+                            + ", Page " + requests[i] + " loaded into Frame " + k);
+                        
+                        frames[k][0] = requests[i];
+                    }
+                } 
+            }
+        }
+
+        log.add(pageFaultCount + " page faults");
+        WriteOutputFile();
+    }
+
+    public void LRU(){
+        ResetVariables();
+
+        log.add("");
+        log.add("LRU");
+
+        for (int i = 0; i < requests.length; i++)
+        { 
+            if (!CheckIfPageLoaded(requests[i], i) && !CheckIfFrameIsEmpty(requests[i], i)){
+
+                int[] leastRecentlyUsedIndex = new int[2];
+                leastRecentlyUsedIndex[0] = 0;
+                leastRecentlyUsedIndex[1] = i;
+                for (int p = 0; p < frames.length; p++){
+                    
+                    if (frames[p][1] < leastRecentlyUsedIndex[1]){
+                        leastRecentlyUsedIndex[0] = p;
+                        leastRecentlyUsedIndex[1] = frames[p][1];
+                    }
+                }
+
+                log.add("Page " + frames[leastRecentlyUsedIndex[0]][0] + " unloaded from Frame " + leastRecentlyUsedIndex[0] 
+                + ", Page " + requests[i] + " loaded into Frame " + leastRecentlyUsedIndex[0]);
+                        
+                frames[leastRecentlyUsedIndex[0]][0] = requests[i];
+                frames[leastRecentlyUsedIndex[0]][1] = i;
+            }
+        }
+
+        log.add(pageFaultCount + " page faults");
+        WriteOutputFile();
     }
 } 
