@@ -20,7 +20,7 @@ public class Assignment4{
 
 class VirtualMemorySimulation{
     //Text file paths
-    private String rootFilePath = "G:\\Repos_New\\CSC-139\\Assignment 4"; //Update to the root file path for your input and output files
+    private String rootFilePath = "G:\\Repos_New\\CSC-139\\Assignment 4"; //Update the root file path for your input and output files
     private String inputFilePath = rootFilePath + "\\input.txt";
     private String outputFilePath = rootFilePath + "\\output.txt";
     private File inputFile;
@@ -125,7 +125,7 @@ class VirtualMemorySimulation{
             outputFile.close();
         }
         catch (IOException e ){
-            System.out.println("File not found. Did you update the rootFilePath variable on line 24?");
+            System.out.println("File not found. Did you update the rootFilePath variable on line 23?");
             e.printStackTrace();
         }
 
